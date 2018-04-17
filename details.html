@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="./dist/css/demo.css" />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>folderfly - Détails</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+
+    <div style="text-align: center" class="row">
+        <div class="column">
+            <h3>
+                <b>Added Song ✌ (
+                    <span id="taddedSongTable"></span>)</b>
+            </h3>
+            <div style="text-align: left" id="addedSongTable"></div>
+        </div>
+        <div class="column ">
+            <h3>
+                <b>Already Added 😎 (
+                    <span id="talreadyTable"></span>
+                    </span>)</b>
+            </h3>
+            <div style="text-align: left" id="alreadyTable"></div>
+        </div>
+        <div class="column">
+            <h3>
+                <b>Not found 🙁 (
+                    <span id="tnotFoundTable"></span>)</b>
+            </h3>
+            <div style="text-align: left" id="notFoundTable"></div>
+        </div>
+    </div>
+
+    <script>
+
+        var notFoundArray = JSON.parse(localStorage.getItem('notFoundArray'));
+        var alreadyArray = JSON.parse(localStorage.getItem('alreadyArray'));
+        var addedSongArray = JSON.parse(localStorage.getItem('addedSongArray'));
+
+        document.getElementById('taddedSongTable').innerHTML = addedSongArray.length;
+        document.getElementById('talreadyTable').innerHTML = alreadyArray.length;
+        document.getElementById('tnotFoundTable').innerHTML = notFoundArray.length;
+
+        var addedSongTable = document.getElementById('addedSongTable');
+        var alreadyTable = document.getElementById('alreadyTable');
+        var notFoundTable = document.getElementById('notFoundTable');
+
+        notFoundArray.forEach(element => {
+            notFoundTable.innerHTML += element+'<br><br>';
+        });
+
+        alreadyArray.forEach(element => {
+            alreadyTable.innerHTML += element+'<br><br>';
+        });
+
+        addedSongArray.forEach(element => {
+            addedSongTable.innerHTML += element+'<br><br>';
+        });
+
+
+    </script>
+
+</body>
+
+</html>

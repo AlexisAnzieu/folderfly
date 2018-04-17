@@ -6,6 +6,8 @@
     <title>folderfly </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="./dist/img/fly.png" />
+
+
     <link rel="stylesheet" type="text/css" href="./dist/css/normalize.css" />
     <link rel="stylesheet" type="text/css" href="./dist/css/demo.css" />
     <link rel="stylesheet" type="text/css" href="./dist/css/component.css" />
@@ -15,6 +17,7 @@
     <link rel="stylesheet" type="text/css" href="./dist/css/cs-skin-rotate.css" />
     <link rel="stylesheet" type="text/css" href="./dist/css/set1.css" />
 
+
     <script src="./dist/js/spotify-web-api.js"></script>
     <script src="./dist/js/musicmetadata.js"></script>
     <script src="./dist/js/custom-file-input.js"></script>
@@ -22,9 +25,26 @@
         crossorigin="anonymous"></script>
     <script src="./dist/js/classie.js"></script>
     <script src="./dist/js/selectFx.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
 
 
     <script>(function (e, t, n) { var r = e.querySelectorAll("html")[0]; r.className = r.className.replace(/(^|\s)no-js(\s|$)/, "$1js$2") })(document, window, 0);</script>
+
+    <style>
+        .column2 {
+            float: left;
+            width: 50%;
+        }
+
+        /* Clear floats after the columns */
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
 
 </head>
 
@@ -34,13 +54,31 @@
     <div style="text-align: center">
 
         <div style="color:black" id="modalInfo" class="modal">
-            <div class="modal-content">
+            <div class="modal-content" style="text-align: justify">
                 <h1>Info</h1>
-                <p>
-                    This is a free-to-use non-commercial website build with with vanillaJS and
+                
+                <p style="font-size: 20px">
+                    <b>EN</b> : This is a free-to-use non-commercial website build with with vanillaJS and
                     <a href="https://github.com/thelinmichael/spotify-web-api-node">spotify-web-api-node</a> . All the design inspiration come from
                     <a href="https://tympanus.net/codrops/">
                         Codrops.</a>
+                </p>
+                <p style="font-size: 20px">
+                    This tool doesn't upload your local files on spotify, but instead it scrapes your entire folder(s) and for each title track,
+                    it asks spotify if it's in its library. If yes, the track is added on your playlist. If not, nothing
+                    happend...
+                </p>
+                <br>
+                <p style="font-size: 20px">
+                    <b>FR</b> : Ceci est un site gratuit à usage non commercial construit avec vanillaJS ainsi que
+                    <a href="https://github.com/thelinmichael/spotify-web-api-node">spotify-web-api-node</a> . Tout le design est directement inspiré de
+                    <a href="https://tympanus.net/codrops/">
+                        Codrops.</a>
+                </p>
+                <p style="font-size: 20px">
+                    Cet outil ne télécharge pas vos fichiers locaux sur spotify, mais à la place il aspire votre dossier entier et pour chacun
+                    des titres il demande à Spotify s'il se trouve dans sa bibliothèque. Si oui, la piste est ajoutée sur
+                    votre playlist. Sinon, rien ne se passe ...
                 </p>
             </div>
         </div>
@@ -58,8 +96,9 @@
                 </a>
             </span>
             <span style="padding-right:10px">
-                <a target="_blank" href="https://github.com/AlexisAnzieu">
-                    <i class="fab fa-github fa-2x"></i>
+                <a target="_blank" href="https://www.facebook.com/folderfly/">
+                    <i class="fab fa-facebook-square fa-2x"></i>
+
                 </a>
             </span>
             <span style="padding-right:10px">
@@ -183,567 +222,590 @@
         </div>
 
 
-        <div style="color:black" id="modalEnd" class="modal">
+        <div style="color:black;" id="modalEnd" class="modal">
             <div class="modal-content">
                 <h1 id="headMatching">Matching in progress...</h1>
-                <h2 id="subHeadMatching"></h2>
-                <p>
-                    <span id="currentNumber">0</span>/
-                    <span id="totalNumber"></span>
-                    processed tracks
-                    <br>
-                    <br>
-                    <span id="currentSong"></span>
-                </p>
+
                 <div class="row">
-                    <div class="column">
-                        <h3>
-                            <b>Added Song ✌ (
-                                <span id="taddedSongTable">0</span>)</b>
-                        </h3>
-                        <div style="overflow: auto; position: relative;height: 300px;" id="addedSongTable"></div>
+                    <div style="width: 45%" class="column2">
+                        <canvas id="myChart"></canvas>
                     </div>
-                    <div class="column ">
-                        <h3>
-                            <b>Already Added 😎(
-                                <span id="talreadyTable">0</span>)</b>
-                        </h3>
-                        <div style="overflow: auto; position: relative;height: 300px;" id="alreadyTable"></div>
+                    <div class="column2">
+
+                        <h2 id="subHeadMatching"></h2>
+                        <p>
+                            <h4>
+                                <span id="currentNumber">0</span>
+                                <span id="totalNumber"></span>
+                            </h4>
+                            <br>
+                            <br>
+                            <span id="currentSong"></span>
+                        </p>
                     </div>
-                    <div class="column">
-                        <h3>
-                            <b>Not found 🙁(
-                                <span id="tnotFoundTable">0</span>)</b>
-                        </h3>
-                        <div style="overflow: auto; position: relative;height: 300px;" id="notFoundTable"></div>
-                    </div>
+
                 </div>
-
             </div>
+
         </div>
-
-    </div>
-    <script type="text/javascript">
+        <script type="text/javascript">
 
 
-        var songList = [];
-        var noInfoList = [];
-        var tracksNumber = 0;
-
-        var loginButton = document.querySelector("#loginButton");
-
-        var playlist;
-        var playlistList = [];
-        var playlistURL;
-        var existingSongs = [];
-        var select = document.querySelector(".cs-select");
-        var namePlaylist = document.getElementById('namePlaylist')
-        var selectPlaylist = document.getElementById('selectPlaylist');
-
-        var taddedSongTable = document.getElementById('taddedSongTable');
-        var talreadyTable = document.getElementById('talreadyTable');
-        var tnotFoundTable = document.getElementById('tnotFoundTable');
-
-        var addedSongTable = document.getElementById('addedSongTable');
-        var alreadyTable = document.getElementById('alreadyTable');
-        var notFoundTable = document.getElementById('notFoundTable');
-
-
-
-        var colourIsLight = function (r, g, b) {
-
-            // Counting the perceptive luminance
-            // human eye favors green color... 
-            var a = 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-            return (a < 0.5);
-        }
-
-        var randomRgb = function () {
-            var r = /* 189; //*/ Math.floor(Math.random() * 256);
-            var g = /*60; //*/ Math.floor(Math.random() * 256);
-            var b = /*151; //*/ Math.floor(Math.random() * 256);
-            return [r, g, b];
-        };
-
-        var colourFromRgb = function (r, g, b) {
-            return 'rgb(' + r + ',' + g + ',' + b + ')';
-        };
-
-        var bgRgb1 = randomRgb();
-        var bgRgb2 = randomRgb();
-
-        var bgColour1 = colourFromRgb(bgRgb1[0], bgRgb1[1], bgRgb1[2]);
-        var bgColour2 = colourFromRgb(bgRgb2[0], bgRgb2[1], bgRgb2[2]);
-
-        var textColour = colourIsLight(bgRgb1[0], bgRgb1[1], bgRgb1[2]) ? 'black' : 'white';
-
-
-        document.body.style.background = `-webkit-gradient(linear, right top, right bottom, from(${bgColour1}), to(${bgColour2})) fixed`
-        document.body.style.color = textColour
-
-        filterColor = (textColour === "black" ? 0 : 1);
-
-        document.querySelector(".logoHead").setAttribute("style", `width:200px;margin-bottom:-50px;filter: grayscale(1) invert(${filterColor});-webkit-filter: grayscale(1) invert(${filterColor})`)
-
-
-        document.addEventListener('DOMContentLoaded', function (event) {
-
-            function getURLParameter(name) {
-                return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href.replace("#", "?")) || [null, ''])[1].replace(/\+/g, '%20')) || null;
-            }
-
-
-            var s = new SpotifyWebApi();
-
-
-            var url_string = window.location.href
-            //var url = new URL(url_string.replace("#", "?"));
-            var token = getURLParameter("access_token");
-            s.setAccessToken(token);
             var songList = [];
-            var playlistSelection = document.querySelector("#playlistSelection")
+            var noInfoList = [];
+            var tracksNumber = 0;
 
-            var filter = function (track, level = 0) {
+            var loginButton = document.querySelector("#loginButton");
 
-                if (level == 0) {
-                    var re = /(^(\d|\s)*(\.|-|_)?|\(\s*original\s*mix\s*\)|\[.*\])/ig;
-                    var filteredTitle = track.replace(re, '');
-                    var filteredTitle = filteredTitle.replace(/\_/g, ' ');
-                } else {
-                    var re = /(\(.*\)|\w*\.\w*)/g;
-                    var filteredTitle = track.replace(re, '');
+            var playlist;
+            var playlistList = [];
+            var playlistURL;
+            var existingSongs = [];
+            var select = document.querySelector(".cs-select");
+            var namePlaylist = document.getElementById('namePlaylist')
+            var selectPlaylist = document.getElementById('selectPlaylist');
+
+
+
+
+            var colourIsLight = function (r, g, b) {
+
+                // Counting the perceptive luminance
+                // human eye favors green color... 
+                var a = 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+                return (a < 0.5);
+            }
+
+            var randomRgb = function () {
+                var r = /* 189; //*/ Math.floor(Math.random() * 256);
+                var g = /*60; //*/ Math.floor(Math.random() * 256);
+                var b = /*151; //*/ Math.floor(Math.random() * 256);
+                return [r, g, b];
+            };
+
+            var colourFromRgb = function (r, g, b) {
+                return 'rgb(' + r + ',' + g + ',' + b + ')';
+            };
+
+            var bgRgb1 = randomRgb();
+            var bgRgb2 = randomRgb();
+
+            var bgColour1 = colourFromRgb(bgRgb1[0], bgRgb1[1], bgRgb1[2]);
+            var bgColour2 = colourFromRgb(bgRgb2[0], bgRgb2[1], bgRgb2[2]);
+
+            var textColour = colourIsLight(bgRgb1[0], bgRgb1[1], bgRgb1[2]) ? 'black' : 'white';
+
+
+            document.body.style.background = `-webkit-gradient(linear, right top, right bottom, from(${bgColour1}), to(${bgColour2})) fixed`
+            document.body.style.color = textColour
+
+            filterColor = (textColour === "black" ? 0 : 1);
+
+            document.querySelector(".logoHead").setAttribute("style", `width:200px;margin-bottom:-50px;filter: grayscale(1) invert(${filterColor});-webkit-filter: grayscale(1) invert(${filterColor})`)
+
+
+            document.addEventListener('DOMContentLoaded', function (event) {
+
+                function getURLParameter(name) {
+                    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href.replace("#", "?")) || [null, ''])[1].replace(/\+/g, '%20')) || null;
                 }
 
 
-                return filteredTitle
-            }
+                var s = new SpotifyWebApi();
 
-            var searchTracks = async function (track, level = 0) {
-
-                if (level == 0) {
-                    return s.searchTracks(filter(track, level))
-                        .then(data => {
-
-                            if (data.tracks.items.length == 0 && level == 0) {
-                                return searchTracks(track, 1)
-                            } else {
-                                return data
-                            }
-                        })
-                } else {
-                    return s.searchTracks(filter(track, level))
-                        .then(data => {
-                            if (data.tracks.items.length != 0) {
-                                return data
-                            } else {
-                                return -1
-                            }
-                        })
-                }
+                localStorage.removeItem('notFoundArray');
+                localStorage.removeItem('alreadyArray');
+                localStorage.removeItem('addedSongArray');
 
 
-            }
 
-            var addTracksToPlaylist = async function ({ userID, track, playlistID }) {
+                var url_string = window.location.href
+                //var url = new URL(url_string.replace("#", "?"));
+                var token = getURLParameter("access_token");
+                s.setAccessToken(token);
+                var songList = [];
+                var playlistSelection = document.querySelector("#playlistSelection")
 
-                var level = 0;
+                var filter = function (track, level = 0) {
 
-
-                return searchTracks(track).then(data => {
-
-                    if (data != -1 && !existingSongs.includes(data.tracks.items[0].id)) {
-                        existingSongs.push(data.tracks.items[0].id); 
-                        return s.addTracksToPlaylist(userID, playlistID, [
-                            data.tracks.items[0].uri
-                        ])
-                    } else if (data == -1) {
-                        return -1
+                    if (level == 0) {
+                        var re = /(^(\d|\s)*(\.|-|_)?|\(\s*original\s*mix\s*\)|\[.*\])/ig;
+                        var filteredTitle = track.replace(re, '');
+                        var filteredTitle = filteredTitle.replace(/\_/g, ' ');
                     } else {
-                        return 0
+                        var re = /(\(.*\)|\w*\.\w*)/g;
+                        var filteredTitle = track.replace(re, '');
                     }
 
 
-                })
+                    return filteredTitle
+                }
+
+                var searchTracks = async function (track, level = 0) {
+
+                    if (level == 0) {
+                        return s.searchTracks(filter(track, level))
+                            .then(data => {
+
+                                if (data.tracks.items.length == 0 && level == 0) {
+                                    return searchTracks(track, 1)
+                                } else {
+                                    return data
+                                }
+                            })
+                    } else {
+                        return s.searchTracks(filter(track, level))
+                            .then(data => {
+                                if (data.tracks.items.length != 0) {
+                                    return data
+                                } else {
+                                    return -1
+                                }
+                            })
+                    }
+
+
+                }
+
+                var addTracksToPlaylist = async function ({ userID, track, playlistID }) {
+
+                    var level = 0;
+
+
+                    return searchTracks(track).then(data => {
+
+                        if (data != -1 && !existingSongs.includes(data.tracks.items[0].id)) {
+                            existingSongs.push(data.tracks.items[0].id);
+                            return s.addTracksToPlaylist(userID, playlistID, [
+                                data.tracks.items[0].uri
+                            ])
+                        } else if (data == -1) {
+                            return -1
+                        } else {
+                            return 0
+                        }
+
+
+                    })
 
 
 
-            }
+                }
 
-            var createPlaylist = async function (options) {
+                var createPlaylist = async function (options) {
 
-                return s.getMe().then(userData => {
+                    return s.getMe().then(userData => {
 
-                    return s.createPlaylist(userData.id, options)
-                        .then(playlistData => {
+                        return s.createPlaylist(userData.id, options)
+                            .then(playlistData => {
 
-                            return playlistData
-                        })
-
-                });
-            }
-
-            var getPlaylistTracks = async function (playlistID) {
-
-                return s.getMe().then(userData => {
-
-                    return s.getPlaylistTracks(userData.id, playlistID)
-                        .then(playlistTracksRaw => {
-
-                            var playlistTracks = [];
-
-                            playlistTracksRaw.items.forEach(tracks => {
-                                playlistTracks.push(tracks.track.id)
+                                return playlistData
                             })
 
-                            return playlistTracks
-                        })
+                    });
+                }
 
-                });
-            }
+                var getPlaylistTracks = async function (playlistID) {
 
-            var matching = async function (playlistID) {
+                    return s.getMe().then(userData => {
 
-                let addedTracks = 0;
-                let processedTrack = 0;
-                let notFoundTrack = 0;
-                let alreadyAddedTrack = 0
+                        return s.getPlaylistTracks(userData.id, playlistID)
+                            .then(playlistTracksRaw => {
+
+                                var playlistTracks = [];
+
+                                playlistTracksRaw.items.forEach(tracks => {
+                                    playlistTracks.push(tracks.track.id)
+                                })
+
+                                return playlistTracks
+                            })
+
+                    });
+                }
+
+                var matching = async function (playlistID) {
+
+                    let addedTracks = 0;
+                    let processedTrack = 0;
+                    let notFoundTrack = 0;
+                    let alreadyAddedTrack = 0
+
+                    var addedSongArray = []
+                    var alreadyArray = []
+                    var notFoundArray = []
 
 
-                for (let i = 0; i < tracksNumber; i++) {
+                    for (let i = 0; i < tracksNumber; i++) {
 
-                    setTimeout(function timer() {
+                        setTimeout(function timer() {
 
-                        currentProcessedTrack = songList[i]
+                            currentProcessedTrack = songList[i]
 
-                        if (currentProcessedTrack !== undefined) {
+                            if (currentProcessedTrack !== undefined) {
 
-                            currentSong.innerHTML = currentProcessedTrack;
+                                currentSong.innerHTML = currentProcessedTrack;
 
-                            s.getMe().then(userData => {
+                                s.getMe().then(userData => {
 
 
-                                addTracksToPlaylist({
-                                    userID: userData.id,
-                                    track: currentProcessedTrack,
-                                    playlistID: playlistID
-                                }).then(data => {
+                                    addTracksToPlaylist({
+                                        userID: userData.id,
+                                        track: currentProcessedTrack,
+                                        playlistID: playlistID
+                                    }).then(data => {
 
-                                    if (data == -1) {
-                                        notFoundTrack++;
-                                        tnotFoundTable.innerHTML = notFoundTrack;
-                                        notFoundTable.innerHTML += currentProcessedTrack + "<br>";
+                                        if (data == -1) {
+                                            notFoundArray.push(currentProcessedTrack)
 
-                                    } else if (data == 0) {
-                                        alreadyAddedTrack++;
-                                        talreadyTable.innerHTML = alreadyAddedTrack;
-                                        alreadyTable.innerHTML += currentProcessedTrack + "<br>";
+                                        } else if (data == 0) {
+                                            alreadyArray.push(currentProcessedTrack)
 
-                                    } else {
-                                        addedTracks++;
-                                        taddedSongTable.innerHTML = addedTracks;
-                                        addedSongTable.innerHTML += currentProcessedTrack + "<br>";
+                                        } else {
+                                            addedSongArray.push(currentProcessedTrack)
 
-                                    }
-                                    processedTrack++
-                                    currentNumber.innerHTML = processedTrack;
-                                    totalNumber.innerHTML = `${songList.length} (${(processedTrack / songList.length * 100).toFixed(2)}%)`
+                                        }
+
+                                        chart.data.datasets[0].data = [addedSongArray.length, alreadyArray.length, notFoundArray.length]
+                                        chart.update();
+
+                                        processedTrack++
+                                        currentNumber.innerHTML = processedTrack + "/";
+                                        totalNumber.innerHTML = `${songList.length} (${(processedTrack / songList.length * 100).toFixed(2)}%)   processed tracks`
+
+                                    });
 
                                 });
 
-                            });
 
+                            }
 
-                        }
+                            if (i == tracksNumber - 1) {
 
-                        if (i == tracksNumber - 1) {
-                            currentSong.innerHTML = ""
-                            headMatching.innerHTML = `Well done ! ${((addedTracks + alreadyAddedTrack) / songList.length * 100).toFixed(2)}% of your music had been exported 🎶🎧 `
-                            subHeadMatching.innerHTML = `
+                                currentSong.innerHTML = ""
+                                totalNumber.innerHTML = ""
+                                currentNumber.innerHTML = ""
+                                headMatching.innerHTML = `Well done ! ${((addedSongArray.length + alreadyAddedTrack) / songList.length * 100).toFixed(2)}% of your music had been exported 🎶🎧 `
+                                subHeadMatching.innerHTML = `
+                                <a target="_blank" href="details.html">
+                                <button style="background:#1d8db9" class="button button--moema button--text-thick button--text-upper button--size-m">View tracks details
+                                        <i class="fas fa-table"></i>
+                                </button>
+                                </a>
+                                `
+                                subHeadMatching.innerHTML += `
                                 <a target="_blank" href="${playlistURL}">
                                 <button id="triggerEnd" class="green button button--moema button--text-thick button--text-upper button--size-m">Go to my new playlist
                                     <i class="fas fa-arrow-circle-right"></i>
                                 </button>
                                 </a>
                                 `
-                        }
 
-                    }, i * 500);
+                                localStorage.setItem('notFoundArray', JSON.stringify(notFoundArray));
+                                localStorage.setItem('alreadyArray', JSON.stringify(alreadyArray));
+                                localStorage.setItem('addedSongArray', JSON.stringify(addedSongArray));
 
+
+
+
+                            }
+
+                        }, i * 500);
+
+                    }
                 }
-            }
 
 
 
 
 
-            if (token !== null) {
+                if (token !== null) {
 
 
 
-                document.getElementById("selectPlaylist").classList.remove("hidden");
-                loginButton.innerHTML = `      
+                    document.getElementById("selectPlaylist").classList.remove("hidden");
+                    loginButton.innerHTML = `      
                   <a  href="http://127.0.0.1:5500/index.html">
                                  <button class="button button--moema button--text-thick button--text-upper button--size-m red">Logout Spotify
                          <i class="fab fa-spotify fa-lg"></i>
                        </button>
                        </a>
                     `
-                playlistSelection.innerHTML = '<option value="0" selected="true">None</option>';
+                    playlistSelection.innerHTML = '<option value="0" selected="true">None</option>';
 
-                s.getUserPlaylists().then(data => {
-                    data.items.forEach((e, index) => {
-                        playlistSelection.innerHTML += `<option value="${e.id}-${e.name}-${e.external_urls.spotify}">${e.name}</option>`
-                        playlistList.push(e.id);
+                    s.getUserPlaylists().then(data => {
+                        data.items.forEach((e, index) => {
+                            playlistSelection.innerHTML += `<option value="${e.id}-${e.name}-${e.external_urls.spotify}">${e.name}</option>`
+                            playlistList.push(e.id);
 
-                    });
+                        });
 
-                    new SelectFx(select, {
-                        onChange: async function (val) {
-                            namePlaylist.innerHTML = val.split('-')[1];
-                            playlist = val.split('-')[0]
-                            playlistURL = val.split('-')[2]
-                            existingSongs = await getPlaylistTracks(playlist);
+                        new SelectFx(select, {
+                            onChange: async function (val) {
+                                namePlaylist.innerHTML = val.split('-')[1];
+                                playlist = val.split('-')[0]
+                                playlistURL = val.split('-')[2]
+                                existingSongs = await getPlaylistTracks(playlist);
 
-                        }
-                    });
-
-                })
-
-
-            }
-
-
-
-            var modalInfo = document.querySelector("#modalInfo");
-            var modalEnd = document.querySelector("#modalEnd");
-
-            var trigger = document.querySelector("#triggerInfo");
-            var triggerEnd = document.querySelector("#triggerEnd");
-
-            var headMatching = document.querySelector("#headMatching");
-            var subHeadMatching = document.querySelector("#subHeadMatching")
-            var currentNumber = document.querySelector("#currentNumber");
-            var currentSong = document.querySelector("#currentSong");
-            var totalNumber = document.querySelector("#totalNumber");
-
-            var closeButtons = document.querySelectorAll(".close-button");
-
-
-
-            function toggleModal(el) {
-                el.classList.toggle("show-modal");
-            }
-
-            function windowOnClick(event) {
-
-                if (event.target === modalInfo) {
-                    toggleModal(modalInfo);
-                } else if (event.target === modalEnd) {
-
-                    location.reload();
-
-                }
-            }
-
-
-
-
-
-            trigger.addEventListener("click", () => toggleModal(modalInfo));
-            triggerEnd.addEventListener("click", () => {
-
-
-
-                document.body.scrollTop = 0; // For Safari
-                document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-
-
-                if (!playlistList.includes(playlist)) {
-                    createPlaylist({
-                        name: playlist,
-                        public: true,
-                        collaborative: false,
-                        description: "thanks to foldertofly"
-                    }).then(newPlaylist => {
-                        playlistURL = newPlaylist.external_urls.spotify
-                        matching(newPlaylist.id)
+                            }
+                        });
 
                     })
-                } else {
-                    matching(playlist)
+
+
                 }
 
-                toggleModal(modalEnd)
-            });
+
+
+                var modalInfo = document.querySelector("#modalInfo");
+                var modalEnd = document.querySelector("#modalEnd");
+
+                var trigger = document.querySelector("#triggerInfo");
+                var triggerEnd = document.querySelector("#triggerEnd");
+
+                var headMatching = document.querySelector("#headMatching");
+                var subHeadMatching = document.querySelector("#subHeadMatching")
+                var currentNumber = document.querySelector("#currentNumber");
+                var currentSong = document.querySelector("#currentSong");
+                var totalNumber = document.querySelector("#totalNumber");
+
+                var closeButtons = document.querySelectorAll(".close-button");
 
 
 
-            window.addEventListener("click", windowOnClick);
+                function toggleModal(el) {
+                    el.classList.toggle("show-modal");
+                }
+
+                function windowOnClick(event) {
+
+                    if (event.target === modalInfo) {
+                        toggleModal(modalInfo);
+                    } else if (event.target === modalEnd) {
+
+                        location.reload();
+
+                    }
+                }
 
 
 
 
-            var scrapeMetaData = async function (data) {
+
+                trigger.addEventListener("click", () => toggleModal(modalInfo));
+                triggerEnd.addEventListener("click", () => {
 
 
-                return musicmetadata(data, function (err, result) {
-                    if (err) {
 
-                        query = data.name.replace(/\.[^/.]+$/, "")
+                    document.body.scrollTop = 0; // For Safari
+                    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+
+
+                    if (!playlistList.includes(playlist)) {
+                        createPlaylist({
+                            name: playlist,
+                            public: true,
+                            collaborative: false,
+                            description: "thanks to foldertofly"
+                        }).then(newPlaylist => {
+                            playlistURL = newPlaylist.external_urls.spotify
+                            matching(newPlaylist.id)
+
+                        })
                     } else {
+                        matching(playlist)
+                    }
 
-                        var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
-                        var regex = new RegExp(expression);
-                        var t = result.artist[0];
+                    toggleModal(modalEnd)
+                });
 
-                        if (!regex.test(t) && t != undefined && t != "") {
-                            artist = result.artist + " - "
+
+
+                window.addEventListener("click", windowOnClick);
+
+
+
+
+                var scrapeMetaData = async function (data) {
+
+
+                    return musicmetadata(data, function (err, result) {
+                        if (err) {
+
+                            query = data.name.replace(/\.[^/.]+$/, "")
                         } else {
-                            artist = ""
-                        }
 
-                        query = artist + result.title
+                            var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+                            var regex = new RegExp(expression);
+                            var t = result.artist[0];
 
-
-                    }
-
-                    if (query != undefined && query != "" && query[0] !== '.') {
-                        songList.push(query)
-                    }
-
-                    return query
-
-                })
-
-
-            }
-
-            function toggleFileDeposit(bool) {
-
-                namePlaylist.innerHTML = playlist;
-
-                if (bool) {
-                    document.getElementById("selectFolder").classList.remove("hidden");
-                } else {
-                    document.getElementById("selectFolder").classList.add("hidden");
-
-                }
-
-            }
-
-            function reloadName(name) {
-
-                playlist = name;
-
-                if ((playlist === undefined || playlist === "")) toggleFileDeposit(false);
-                else toggleFileDeposit(true);
-
-            }
-
-            if (!String.prototype.trim) {
-                (function () {
-                    // Make sure we trim BOM and NBSP
-                    var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
-                    String.prototype.trim = function () {
-                        return this.replace(rtrim, '');
-                    };
-                })();
-            }
-
-            [].slice.call(document.querySelectorAll('input.input__field')).forEach(function (inputEl) {
-                // in case the input is already filled..
-                if (inputEl.value.trim() !== '') {
-                    classie.add(inputEl.parentNode, 'input--filled');
-                }
-
-                // events:
-                inputEl.addEventListener('focus', onInputFocus);
-                inputEl.addEventListener('blur', onInputBlur);
-                inputEl.addEventListener('keyup', function () { reloadName(inputEl.value) });
-            });
-
-            function onInputFocus(ev) {
-                classie.add(ev.target.parentNode, 'input--filled');
-            }
-
-            function onInputBlur(ev) {
-                if (ev.target.value.trim() === '') {
-                    classie.remove(ev.target.parentNode, 'input--filled');
-                }
-            }
-
-
-
-            var inputs = document.querySelectorAll('.inputfile');
-
-            Array.prototype.forEach.call(inputs, function (input) {
-                var label = input.nextElementSibling,
-                    labelVal = label.innerHTML;
-
-                input.addEventListener('change', async function (e) {
-                    var fileName = '';
-                    if (this.files && this.files.length > 1) {
-                        tracksNumber = this.files.length;
-                        fileName = (this.getAttribute('data-multiple-caption') || '').replace('{count}', this.files.length + songList.length);
-                    } else {
-                        fileName = e.target.value.split('\\').pop();
-                    }
-
-
-                    if (fileName) {
-                        label.querySelector('span').innerHTML = fileName;
-                    } else {
-                        label.innerHTML = labelVal;
-                    }
-
-                    files = (Array.prototype.slice.call(this.files));
-
-                    var start = async () => {
-
-                        return await Promise.all(files.map(async (file) => {
-
-                            if (file.type.indexOf("audio") == 0 && file.name.split('.').pop()!=="m3u") {
-
-                                return await scrapeMetaData(file)
-
+                            if (!regex.test(t) && t != undefined && t != "") {
+                                artist = result.artist + " - "
                             } else {
-                                return tracksNumber--;
+                                artist = ""
                             }
 
-                        })).then(e => {
-                            
-                            document.getElementById("launchContainer").classList.remove("hidden")
-                            document.body.scrollIntoView(false);
+                            query = artist + result.title
+
+
+                        }
+
+                        if (query != undefined && query != "" && query[0] !== '.') {
+                            songList.push(query)
+                        }
+
+                        return query
+
+                    })
+
+
+                }
+
+                function toggleFileDeposit(bool) {
+
+                    namePlaylist.innerHTML = playlist;
+
+                    if (bool) {
+                        document.getElementById("selectFolder").classList.remove("hidden");
+                    } else {
+                        document.getElementById("selectFolder").classList.add("hidden");
+
+                    }
+
+                }
+
+                function reloadName(name) {
+
+                    playlist = name;
+
+                    if ((playlist === undefined || playlist === "")) toggleFileDeposit(false);
+                    else toggleFileDeposit(true);
+
+                }
+
+                if (!String.prototype.trim) {
+                    (function () {
+                        // Make sure we trim BOM and NBSP
+                        var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+                        String.prototype.trim = function () {
+                            return this.replace(rtrim, '');
+                        };
+                    })();
+                }
+
+                [].slice.call(document.querySelectorAll('input.input__field')).forEach(function (inputEl) {
+                    // in case the input is already filled..
+                    if (inputEl.value.trim() !== '') {
+                        classie.add(inputEl.parentNode, 'input--filled');
+                    }
+
+                    // events:
+                    inputEl.addEventListener('focus', onInputFocus);
+                    inputEl.addEventListener('blur', onInputBlur);
+                    inputEl.addEventListener('keyup', function () { reloadName(inputEl.value) });
+                });
+
+                function onInputFocus(ev) {
+                    classie.add(ev.target.parentNode, 'input--filled');
+                }
+
+                function onInputBlur(ev) {
+                    if (ev.target.value.trim() === '') {
+                        classie.remove(ev.target.parentNode, 'input--filled');
+                    }
+                }
+
+
+
+                var inputs = document.querySelectorAll('.inputfile');
+
+                Array.prototype.forEach.call(inputs, function (input) {
+                    var label = input.nextElementSibling,
+                        labelVal = label.innerHTML;
+
+                    input.addEventListener('change', async function (e) {
+                        var fileName = '';
+                        if (this.files && this.files.length > 1) {
+                            tracksNumber = this.files.length;
+                            fileName = (this.getAttribute('data-multiple-caption') || '').replace('{count}', this.files.length + songList.length);
+                        } else {
+                            fileName = e.target.value.split('\\').pop();
+                        }
+
+
+                        if (fileName) {
+                            label.querySelector('span').innerHTML = fileName;
+                        } else {
+                            label.innerHTML = labelVal;
+                        }
+
+                        files = (Array.prototype.slice.call(this.files));
+
+                        var start = async () => {
+
+                            return await Promise.all(files.map(async (file) => {
+
+                                if (file.type.indexOf("audio") == 0 && file.name.split('.').pop() !== "m3u") {
+
+                                    return await scrapeMetaData(file)
+
+                                } else {
+                                    return tracksNumber--;
+                                }
+
+                            })).then(e => {
+
+                                document.getElementById("launchContainer").classList.remove("hidden")
+                                document.body.scrollIntoView(false);
+                            })
+
+
+
+                        }
+
+                        start().then(e => {
+
+                            // setTimeout(function timer() {
+                            // document.getElementById("launchContainer").classList.remove("hidden")
+                            // document.body.scrollIntoView(false);
+
+                            //}, 1000);
+
+
                         })
 
 
 
-                    }
-
-                    start().then(e => {
-
-                        // setTimeout(function timer() {
-                        // document.getElementById("launchContainer").classList.remove("hidden")
-                        // document.body.scrollIntoView(false);
-
-                        //}, 1000);
-
-
-                    })
-
-
-
+                    });
                 });
+
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var chart = new Chart(ctx, {
+                    // The type of chart we want to create
+                    type: 'pie',
+
+                    // The data for our dataset
+                    data: {
+                        labels: ["Added Song ✌", "Already Added 😎", "Not found 🙁"],
+                        datasets: [{
+                            backgroundColor: ['#1db954', '#1d8db9', '#D3394C'],
+                            data: [0, 0, 0],
+                        }]
+                    },
+
+                    // Configuration options go here
+                    options: {}
+                });
+
+
+
+
+
+
             });
 
 
 
 
-
-        });
-
-
-
-
-    </script>
+        </script>
 </body>
