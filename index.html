@@ -251,250 +251,258 @@
         </div>
         <script type="text/javascript">
 
-
-            var songList = [];
-            var noInfoList = [];
-            var tracksNumber = 0;
-
-            var loginButton = document.querySelector("#loginButton");
-
-            var playlist;
-            var playlistList = [];
-            var playlistURL;
-            var existingSongs = [];
-            var select = document.querySelector(".cs-select");
-            var namePlaylist = document.getElementById('namePlaylist')
-            var selectPlaylist = document.getElementById('selectPlaylist');
+                            var loginButton = document.querySelector("#loginButton");
 
 
+            if (/Mobi/.test(navigator.userAgent)) {
+
+               loginButton.innerHTML="Please go to this website with a computer"
+
+            } else {
 
 
-            var colourIsLight = function (r, g, b) {
-
-                // Counting the perceptive luminance
-                // human eye favors green color... 
-                var a = 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-                return (a < 0.5);
-            }
-
-            var randomRgb = function () {
-                var r = /* 189; //*/ Math.floor(Math.random() * 256);
-                var g = /*60; //*/ Math.floor(Math.random() * 256);
-                var b = /*151; //*/ Math.floor(Math.random() * 256);
-                return [r, g, b];
-            };
-
-            var colourFromRgb = function (r, g, b) {
-                return 'rgb(' + r + ',' + g + ',' + b + ')';
-            };
-
-            var bgRgb1 = randomRgb();
-            var bgRgb2 = randomRgb();
-
-            var bgColour1 = colourFromRgb(bgRgb1[0], bgRgb1[1], bgRgb1[2]);
-            var bgColour2 = colourFromRgb(bgRgb2[0], bgRgb2[1], bgRgb2[2]);
-
-            var textColour = colourIsLight(bgRgb1[0], bgRgb1[1], bgRgb1[2]) ? 'black' : 'white';
-
-
-            document.body.style.background = `-webkit-gradient(linear, right top, right bottom, from(${bgColour1}), to(${bgColour2})) fixed`
-            document.body.style.color = textColour
-
-            filterColor = (textColour === "black" ? 0 : 1);
-
-            document.querySelector(".logoHead").setAttribute("style", `width:200px;margin-bottom:-50px;filter: grayscale(1) invert(${filterColor});-webkit-filter: grayscale(1) invert(${filterColor})`)
-
-
-            document.addEventListener('DOMContentLoaded', function (event) {
-
-                function getURLParameter(name) {
-                    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href.replace("#", "?")) || [null, ''])[1].replace(/\+/g, '%20')) || null;
-                }
-
-
-                var s = new SpotifyWebApi();
-
-                localStorage.removeItem('notFoundArray');
-                localStorage.removeItem('alreadyArray');
-                localStorage.removeItem('addedSongArray');
-
-
-
-                var url_string = window.location.href
-                //var url = new URL(url_string.replace("#", "?"));
-                var token = getURLParameter("access_token");
-                s.setAccessToken(token);
                 var songList = [];
-                var playlistSelection = document.querySelector("#playlistSelection")
+                var noInfoList = [];
+                var tracksNumber = 0;
 
-                var filter = function (track, level = 0) {
 
-                    if (level == 0) {
-                        var re = /(^(\d|\s)*(\.|-|_)?|\(\s*original\s*mix\s*\)|\[.*\])/ig;
-                        var filteredTitle = track.replace(re, '');
-                        var filteredTitle = filteredTitle.replace(/\_/g, ' ');
-                    } else {
-                        var re = /(\(.*\)|\w*\.\w*)/g;
-                        var filteredTitle = track.replace(re, '');
+                var playlist;
+                var playlistList = [];
+                var playlistURL;
+                var existingSongs = [];
+                var select = document.querySelector(".cs-select");
+                var namePlaylist = document.getElementById('namePlaylist')
+                var selectPlaylist = document.getElementById('selectPlaylist');
+
+
+
+
+                var colourIsLight = function (r, g, b) {
+
+                    // Counting the perceptive luminance
+                    // human eye favors green color... 
+                    var a = 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+                    return (a < 0.5);
+                }
+
+                var randomRgb = function () {
+                    var r = /* 189; //*/ Math.floor(Math.random() * 256);
+                    var g = /*60; //*/ Math.floor(Math.random() * 256);
+                    var b = /*151; //*/ Math.floor(Math.random() * 256);
+                    return [r, g, b];
+                };
+
+                var colourFromRgb = function (r, g, b) {
+                    return 'rgb(' + r + ',' + g + ',' + b + ')';
+                };
+
+                var bgRgb1 = randomRgb();
+                var bgRgb2 = randomRgb();
+
+                var bgColour1 = colourFromRgb(bgRgb1[0], bgRgb1[1], bgRgb1[2]);
+                var bgColour2 = colourFromRgb(bgRgb2[0], bgRgb2[1], bgRgb2[2]);
+
+                var textColour = colourIsLight(bgRgb1[0], bgRgb1[1], bgRgb1[2]) ? 'black' : 'white';
+
+
+                document.body.style.background = `-webkit-gradient(linear, right top, right bottom, from(${bgColour1}), to(${bgColour2})) fixed`
+                document.body.style.color = textColour
+
+                filterColor = (textColour === "black" ? 0 : 1);
+
+                document.querySelector(".logoHead").setAttribute("style", `width:200px;margin-bottom:-50px;filter: grayscale(1) invert(${filterColor});-webkit-filter: grayscale(1) invert(${filterColor})`)
+
+
+                document.addEventListener('DOMContentLoaded', function (event) {
+
+                    function getURLParameter(name) {
+                        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href.replace("#", "?")) || [null, ''])[1].replace(/\+/g, '%20')) || null;
                     }
 
 
-                    return filteredTitle
-                }
+                    var s = new SpotifyWebApi();
 
-                var searchTracks = async function (track, level = 0) {
-
-                    if (level == 0) {
-                        return s.searchTracks(filter(track, level))
-                            .then(data => {
-
-                                if (data.tracks.items.length == 0 && level == 0) {
-                                    return searchTracks(track, 1)
-                                } else {
-                                    return data
-                                }
-                            })
-                    } else {
-                        return s.searchTracks(filter(track, level))
-                            .then(data => {
-                                if (data.tracks.items.length != 0) {
-                                    return data
-                                } else {
-                                    return -1
-                                }
-                            })
-                    }
+                    localStorage.removeItem('notFoundArray');
+                    localStorage.removeItem('alreadyArray');
+                    localStorage.removeItem('addedSongArray');
 
 
-                }
 
-                var addTracksToPlaylist = async function ({ userID, track, playlistID }) {
+                    var url_string = window.location.href
+                    //var url = new URL(url_string.replace("#", "?"));
+                    var token = getURLParameter("access_token");
+                    s.setAccessToken(token);
+                    var songList = [];
+                    var playlistSelection = document.querySelector("#playlistSelection")
 
-                    var level = 0;
+                    var filter = function (track, level = 0) {
 
-
-                    return searchTracks(track).then(data => {
-
-                        if (data != -1 && !existingSongs.includes(data.tracks.items[0].id)) {
-                            existingSongs.push(data.tracks.items[0].id);
-                            return s.addTracksToPlaylist(userID, playlistID, [
-                                data.tracks.items[0].uri
-                            ])
-                        } else if (data == -1) {
-                            return -1
+                        if (level == 0) {
+                            var re = /(^(\d|\s)*(\.|-|_)?|\(\s*original\s*mix\s*\)|\[.*\])/ig;
+                            var filteredTitle = track.replace(re, '');
+                            var filteredTitle = filteredTitle.replace(/\_/g, ' ');
                         } else {
-                            return 0
+                            var re = /(\(.*\)|\w*\.\w*)/g;
+                            var filteredTitle = track.replace(re, '');
                         }
 
 
-                    })
+                        return filteredTitle
+                    }
+
+                    var searchTracks = async function (track, level = 0) {
+
+                        if (level == 0) {
+                            return s.searchTracks(filter(track, level))
+                                .then(data => {
+
+                                    if (data.tracks.items.length == 0 && level == 0) {
+                                        return searchTracks(track, 1)
+                                    } else {
+                                        return data
+                                    }
+                                })
+                        } else {
+                            return s.searchTracks(filter(track, level))
+                                .then(data => {
+                                    if (data.tracks.items.length != 0) {
+                                        return data
+                                    } else {
+                                        return -1
+                                    }
+                                })
+                        }
+
+
+                    }
+
+                    var addTracksToPlaylist = async function ({ userID, track, playlistID }) {
+
+                        var level = 0;
+
+
+                        return searchTracks(track).then(data => {
+
+                            if (data != -1 && !existingSongs.includes(data.tracks.items[0].id)) {
+                                existingSongs.push(data.tracks.items[0].id);
+                                return s.addTracksToPlaylist(userID, playlistID, [
+                                    data.tracks.items[0].uri
+                                ])
+                            } else if (data == -1) {
+                                return -1
+                            } else {
+                                return 0
+                            }
+
+
+                        })
 
 
 
-                }
+                    }
 
-                var createPlaylist = async function (options) {
+                    var createPlaylist = async function (options) {
 
-                    return s.getMe().then(userData => {
+                        return s.getMe().then(userData => {
 
-                        return s.createPlaylist(userData.id, options)
-                            .then(playlistData => {
+                            return s.createPlaylist(userData.id, options)
+                                .then(playlistData => {
 
-                                return playlistData
-                            })
-
-                    });
-                }
-
-                var getPlaylistTracks = async function (playlistID) {
-
-                    return s.getMe().then(userData => {
-
-                        return s.getPlaylistTracks(userData.id, playlistID)
-                            .then(playlistTracksRaw => {
-
-                                var playlistTracks = [];
-
-                                playlistTracksRaw.items.forEach(tracks => {
-                                    playlistTracks.push(tracks.track.id)
+                                    return playlistData
                                 })
 
-                                return playlistTracks
-                            })
+                        });
+                    }
 
-                    });
-                }
+                    var getPlaylistTracks = async function (playlistID) {
 
-                var matching = async function (playlistID) {
+                        return s.getMe().then(userData => {
 
-                    let addedTracks = 0;
-                    let processedTrack = 0;
-                    let notFoundTrack = 0;
-                    let alreadyAddedTrack = 0
+                            return s.getPlaylistTracks(userData.id, playlistID)
+                                .then(playlistTracksRaw => {
 
-                    var addedSongArray = []
-                    var alreadyArray = []
-                    var notFoundArray = []
+                                    var playlistTracks = [];
+
+                                    playlistTracksRaw.items.forEach(tracks => {
+                                        playlistTracks.push(tracks.track.id)
+                                    })
+
+                                    return playlistTracks
+                                })
+
+                        });
+                    }
+
+                    var matching = async function (playlistID) {
+
+                        let addedTracks = 0;
+                        let processedTrack = 0;
+                        let notFoundTrack = 0;
+                        let alreadyAddedTrack = 0
+
+                        var addedSongArray = []
+                        var alreadyArray = []
+                        var notFoundArray = []
 
 
-                    for (let i = 0; i < tracksNumber; i++) {
+                        for (let i = 0; i < tracksNumber; i++) {
 
-                        setTimeout(function timer() {
+                            setTimeout(function timer() {
 
-                            currentProcessedTrack = songList[i]
+                                currentProcessedTrack = songList[i]
 
-                            if (currentProcessedTrack !== undefined) {
+                                if (currentProcessedTrack !== undefined) {
 
-                                currentSong.innerHTML = currentProcessedTrack;
+                                    currentSong.innerHTML = currentProcessedTrack;
 
-                                s.getMe().then(userData => {
+                                    s.getMe().then(userData => {
 
 
-                                    addTracksToPlaylist({
-                                        userID: userData.id,
-                                        track: currentProcessedTrack,
-                                        playlistID: playlistID
-                                    }).then(data => {
+                                        addTracksToPlaylist({
+                                            userID: userData.id,
+                                            track: currentProcessedTrack,
+                                            playlistID: playlistID
+                                        }).then(data => {
 
-                                        if (data == -1) {
-                                            notFoundArray.push(currentProcessedTrack)
+                                            if (data == -1) {
+                                                notFoundArray.push(currentProcessedTrack)
 
-                                        } else if (data == 0) {
-                                            alreadyArray.push(currentProcessedTrack)
+                                            } else if (data == 0) {
+                                                alreadyArray.push(currentProcessedTrack)
 
-                                        } else {
-                                            addedSongArray.push(currentProcessedTrack)
+                                            } else {
+                                                addedSongArray.push(currentProcessedTrack)
 
-                                        }
+                                            }
 
-                                        chart.data.datasets[0].data = [addedSongArray.length, alreadyArray.length, notFoundArray.length]
-                                        chart.update();
+                                            chart.data.datasets[0].data = [addedSongArray.length, alreadyArray.length, notFoundArray.length]
+                                            chart.update();
 
-                                        processedTrack++
-                                        currentNumber.innerHTML = processedTrack + "/";
-                                        totalNumber.innerHTML = `${songList.length} (${(processedTrack / songList.length * 100).toFixed(2)}%)   processed tracks`
+                                            processedTrack++
+                                            currentNumber.innerHTML = processedTrack + "/";
+                                            totalNumber.innerHTML = `${songList.length} (${(processedTrack / songList.length * 100).toFixed(2)}%)   processed tracks`
+
+                                        });
 
                                     });
 
-                                });
 
+                                }
 
-                            }
+                                if (i == tracksNumber - 1) {
 
-                            if (i == tracksNumber - 1) {
-
-                                currentSong.innerHTML = ""
-                                totalNumber.innerHTML = ""
-                                currentNumber.innerHTML = ""
-                                headMatching.innerHTML = `Well done ! ${((addedSongArray.length + alreadyAddedTrack) / songList.length * 100).toFixed(2)}% of your music had been exported 🎶🎧 `
-                                subHeadMatching.innerHTML = `
+                                    currentSong.innerHTML = ""
+                                    totalNumber.innerHTML = ""
+                                    currentNumber.innerHTML = ""
+                                    headMatching.innerHTML = `Well done ! ${((addedSongArray.length + alreadyAddedTrack) / songList.length * 100).toFixed(2)}% of your music had been exported 🎶🎧 `
+                                    subHeadMatching.innerHTML = `
                                 <a target="_blank" href="details.html">
                                 <button style="background:#1d8db9" class="button button--moema button--text-thick button--text-upper button--size-m">View tracks details
                                         <i class="fas fa-table"></i>
                                 </button>
                                 </a>
                                 `
-                                subHeadMatching.innerHTML += `
+                                    subHeadMatching.innerHTML += `
                                 <a target="_blank" href="${playlistURL}">
                                 <button id="triggerEnd" class="green button button--moema button--text-thick button--text-upper button--size-m">Go to my new playlist
                                     <i class="fas fa-arrow-circle-right"></i>
@@ -502,311 +510,311 @@
                                 </a>
                                 `
 
-                                localStorage.setItem('notFoundArray', JSON.stringify(notFoundArray));
-                                localStorage.setItem('alreadyArray', JSON.stringify(alreadyArray));
-                                localStorage.setItem('addedSongArray', JSON.stringify(addedSongArray));
+                                    localStorage.setItem('notFoundArray', JSON.stringify(notFoundArray));
+                                    localStorage.setItem('alreadyArray', JSON.stringify(alreadyArray));
+                                    localStorage.setItem('addedSongArray', JSON.stringify(addedSongArray));
 
 
 
 
-                            }
+                                }
 
-                        }, i * 500);
+                            }, i * 500);
 
+                        }
                     }
-                }
 
 
 
 
 
-                if (token !== null) {
+                    if (token !== null) {
 
 
 
-                    document.getElementById("selectPlaylist").classList.remove("hidden");
-                    loginButton.innerHTML = `      
+                        document.getElementById("selectPlaylist").classList.remove("hidden");
+                        loginButton.innerHTML = `      
                   <a  href="http://127.0.0.1:5500/index.html">
                                  <button class="button button--moema button--text-thick button--text-upper button--size-m red">Logout Spotify
                          <i class="fab fa-spotify fa-lg"></i>
                        </button>
                        </a>
                     `
-                    playlistSelection.innerHTML = '<option value="0" selected="true">None</option>';
+                        playlistSelection.innerHTML = '<option value="0" selected="true">None</option>';
 
-                    s.getUserPlaylists().then(data => {
-                        data.items.forEach((e, index) => {
-                            playlistSelection.innerHTML += `<option value="${e.id}-${e.name}-${e.external_urls.spotify}">${e.name}</option>`
-                            playlistList.push(e.id);
+                        s.getUserPlaylists().then(data => {
+                            data.items.forEach((e, index) => {
+                                playlistSelection.innerHTML += `<option value="${e.id}-${e.name}-${e.external_urls.spotify}">${e.name}</option>`
+                                playlistList.push(e.id);
 
-                        });
+                            });
 
-                        new SelectFx(select, {
-                            onChange: async function (val) {
-                                namePlaylist.innerHTML = val.split('-')[1];
-                                playlist = val.split('-')[0]
-                                playlistURL = val.split('-')[2]
-                                existingSongs = await getPlaylistTracks(playlist);
+                            new SelectFx(select, {
+                                onChange: async function (val) {
+                                    namePlaylist.innerHTML = val.split('-')[1];
+                                    playlist = val.split('-')[0]
+                                    playlistURL = val.split('-')[2]
+                                    existingSongs = await getPlaylistTracks(playlist);
 
-                            }
-                        });
-
-                    })
-
-
-                }
-
-
-
-                var modalInfo = document.querySelector("#modalInfo");
-                var modalEnd = document.querySelector("#modalEnd");
-
-                var trigger = document.querySelector("#triggerInfo");
-                var triggerEnd = document.querySelector("#triggerEnd");
-
-                var headMatching = document.querySelector("#headMatching");
-                var subHeadMatching = document.querySelector("#subHeadMatching")
-                var currentNumber = document.querySelector("#currentNumber");
-                var currentSong = document.querySelector("#currentSong");
-                var totalNumber = document.querySelector("#totalNumber");
-
-                var closeButtons = document.querySelectorAll(".close-button");
-
-
-
-                function toggleModal(el) {
-                    el.classList.toggle("show-modal");
-                }
-
-                function windowOnClick(event) {
-
-                    if (event.target === modalInfo) {
-                        toggleModal(modalInfo);
-                    } else if (event.target === modalEnd) {
-
-                        location.reload();
-
-                    }
-                }
-
-
-
-
-
-                trigger.addEventListener("click", () => toggleModal(modalInfo));
-                triggerEnd.addEventListener("click", () => {
-
-
-
-                    document.body.scrollTop = 0; // For Safari
-                    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-
-
-                    if (!playlistList.includes(playlist)) {
-                        createPlaylist({
-                            name: playlist,
-                            public: true,
-                            collaborative: false,
-                            description: "thanks to foldertofly"
-                        }).then(newPlaylist => {
-                            playlistURL = newPlaylist.external_urls.spotify
-                            matching(newPlaylist.id)
+                                }
+                            });
 
                         })
-                    } else {
-                        matching(playlist)
+
+
                     }
 
-                    toggleModal(modalEnd)
-                });
+
+
+                    var modalInfo = document.querySelector("#modalInfo");
+                    var modalEnd = document.querySelector("#modalEnd");
+
+                    var trigger = document.querySelector("#triggerInfo");
+                    var triggerEnd = document.querySelector("#triggerEnd");
+
+                    var headMatching = document.querySelector("#headMatching");
+                    var subHeadMatching = document.querySelector("#subHeadMatching")
+                    var currentNumber = document.querySelector("#currentNumber");
+                    var currentSong = document.querySelector("#currentSong");
+                    var totalNumber = document.querySelector("#totalNumber");
+
+                    var closeButtons = document.querySelectorAll(".close-button");
 
 
 
-                window.addEventListener("click", windowOnClick);
+                    function toggleModal(el) {
+                        el.classList.toggle("show-modal");
+                    }
+
+                    function windowOnClick(event) {
+
+                        if (event.target === modalInfo) {
+                            toggleModal(modalInfo);
+                        } else if (event.target === modalEnd) {
+
+                            location.reload();
+
+                        }
+                    }
 
 
 
 
-                var scrapeMetaData = async function (data) {
+
+                    trigger.addEventListener("click", () => toggleModal(modalInfo));
+                    triggerEnd.addEventListener("click", () => {
 
 
-                    return musicmetadata(data, function (err, result) {
-                        if (err) {
 
-                            query = data.name.replace(/\.[^/.]+$/, "")
+                        document.body.scrollTop = 0; // For Safari
+                        document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+
+
+                        if (!playlistList.includes(playlist)) {
+                            createPlaylist({
+                                name: playlist,
+                                public: true,
+                                collaborative: false,
+                                description: "thanks to foldertofly"
+                            }).then(newPlaylist => {
+                                playlistURL = newPlaylist.external_urls.spotify
+                                matching(newPlaylist.id)
+
+                            })
                         } else {
+                            matching(playlist)
+                        }
 
-                            var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
-                            var regex = new RegExp(expression);
-                            var t = result.artist[0];
+                        toggleModal(modalEnd)
+                    });
 
-                            if (!regex.test(t) && t != undefined && t != "") {
-                                artist = result.artist + " - "
+
+
+                    window.addEventListener("click", windowOnClick);
+
+
+
+
+                    var scrapeMetaData = async function (data) {
+
+
+                        return musicmetadata(data, function (err, result) {
+                            if (err) {
+
+                                query = data.name.replace(/\.[^/.]+$/, "")
                             } else {
-                                artist = ""
-                            }
 
-                            query = artist + result.title
+                                var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+                                var regex = new RegExp(expression);
+                                var t = result.artist[0];
 
-
-                        }
-
-                        if (query != undefined && query != "" && query[0] !== '.') {
-                            songList.push(query)
-                        }
-
-                        return query
-
-                    })
-
-
-                }
-
-                function toggleFileDeposit(bool) {
-
-                    namePlaylist.innerHTML = playlist;
-
-                    if (bool) {
-                        document.getElementById("selectFolder").classList.remove("hidden");
-                    } else {
-                        document.getElementById("selectFolder").classList.add("hidden");
-
-                    }
-
-                }
-
-                function reloadName(name) {
-
-                    playlist = name;
-
-                    if ((playlist === undefined || playlist === "")) toggleFileDeposit(false);
-                    else toggleFileDeposit(true);
-
-                }
-
-                if (!String.prototype.trim) {
-                    (function () {
-                        // Make sure we trim BOM and NBSP
-                        var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
-                        String.prototype.trim = function () {
-                            return this.replace(rtrim, '');
-                        };
-                    })();
-                }
-
-                [].slice.call(document.querySelectorAll('input.input__field')).forEach(function (inputEl) {
-                    // in case the input is already filled..
-                    if (inputEl.value.trim() !== '') {
-                        classie.add(inputEl.parentNode, 'input--filled');
-                    }
-
-                    // events:
-                    inputEl.addEventListener('focus', onInputFocus);
-                    inputEl.addEventListener('blur', onInputBlur);
-                    inputEl.addEventListener('keyup', function () { reloadName(inputEl.value) });
-                });
-
-                function onInputFocus(ev) {
-                    classie.add(ev.target.parentNode, 'input--filled');
-                }
-
-                function onInputBlur(ev) {
-                    if (ev.target.value.trim() === '') {
-                        classie.remove(ev.target.parentNode, 'input--filled');
-                    }
-                }
-
-
-
-                var inputs = document.querySelectorAll('.inputfile');
-
-                Array.prototype.forEach.call(inputs, function (input) {
-                    var label = input.nextElementSibling,
-                        labelVal = label.innerHTML;
-
-                    input.addEventListener('change', async function (e) {
-                        var fileName = '';
-                        if (this.files && this.files.length > 1) {
-                            tracksNumber = this.files.length;
-                            fileName = (this.getAttribute('data-multiple-caption') || '').replace('{count}', this.files.length + songList.length);
-                        } else {
-                            fileName = e.target.value.split('\\').pop();
-                        }
-
-
-                        if (fileName) {
-                            label.querySelector('span').innerHTML = fileName;
-                        } else {
-                            label.innerHTML = labelVal;
-                        }
-
-                        files = (Array.prototype.slice.call(this.files));
-
-                        var start = async () => {
-
-                            return await Promise.all(files.map(async (file) => {
-
-                                if (file.type.indexOf("audio") == 0 && file.name.split('.').pop() !== "m3u") {
-
-                                    return await scrapeMetaData(file)
-
+                                if (!regex.test(t) && t != undefined && t != "") {
+                                    artist = result.artist + " - "
                                 } else {
-                                    return tracksNumber--;
+                                    artist = ""
                                 }
 
-                            })).then(e => {
+                                query = artist + result.title
 
-                                document.getElementById("launchContainer").classList.remove("hidden")
-                                document.body.scrollIntoView(false);
+
+                            }
+
+                            if (query != undefined && query != "" && query[0] !== '.') {
+                                songList.push(query)
+                            }
+
+                            return query
+
+                        })
+
+
+                    }
+
+                    function toggleFileDeposit(bool) {
+
+                        namePlaylist.innerHTML = playlist;
+
+                        if (bool) {
+                            document.getElementById("selectFolder").classList.remove("hidden");
+                        } else {
+                            document.getElementById("selectFolder").classList.add("hidden");
+
+                        }
+
+                    }
+
+                    function reloadName(name) {
+
+                        playlist = name;
+
+                        if ((playlist === undefined || playlist === "")) toggleFileDeposit(false);
+                        else toggleFileDeposit(true);
+
+                    }
+
+                    if (!String.prototype.trim) {
+                        (function () {
+                            // Make sure we trim BOM and NBSP
+                            var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+                            String.prototype.trim = function () {
+                                return this.replace(rtrim, '');
+                            };
+                        })();
+                    }
+
+                    [].slice.call(document.querySelectorAll('input.input__field')).forEach(function (inputEl) {
+                        // in case the input is already filled..
+                        if (inputEl.value.trim() !== '') {
+                            classie.add(inputEl.parentNode, 'input--filled');
+                        }
+
+                        // events:
+                        inputEl.addEventListener('focus', onInputFocus);
+                        inputEl.addEventListener('blur', onInputBlur);
+                        inputEl.addEventListener('keyup', function () { reloadName(inputEl.value) });
+                    });
+
+                    function onInputFocus(ev) {
+                        classie.add(ev.target.parentNode, 'input--filled');
+                    }
+
+                    function onInputBlur(ev) {
+                        if (ev.target.value.trim() === '') {
+                            classie.remove(ev.target.parentNode, 'input--filled');
+                        }
+                    }
+
+
+
+                    var inputs = document.querySelectorAll('.inputfile');
+
+                    Array.prototype.forEach.call(inputs, function (input) {
+                        var label = input.nextElementSibling,
+                            labelVal = label.innerHTML;
+
+                        input.addEventListener('change', async function (e) {
+                            var fileName = '';
+                            if (this.files && this.files.length > 1) {
+                                tracksNumber = this.files.length;
+                                fileName = (this.getAttribute('data-multiple-caption') || '').replace('{count}', this.files.length + songList.length);
+                            } else {
+                                fileName = e.target.value.split('\\').pop();
+                            }
+
+
+                            if (fileName) {
+                                label.querySelector('span').innerHTML = fileName;
+                            } else {
+                                label.innerHTML = labelVal;
+                            }
+
+                            files = (Array.prototype.slice.call(this.files));
+
+                            var start = async () => {
+
+                                return await Promise.all(files.map(async (file) => {
+
+                                    if (file.type.indexOf("audio") == 0 && file.name.split('.').pop() !== "m3u") {
+
+                                        return await scrapeMetaData(file)
+
+                                    } else {
+                                        return tracksNumber--;
+                                    }
+
+                                })).then(e => {
+
+                                    document.getElementById("launchContainer").classList.remove("hidden")
+                                    document.body.scrollIntoView(false);
+                                })
+
+
+
+                            }
+
+                            start().then(e => {
+
+                                // setTimeout(function timer() {
+                                // document.getElementById("launchContainer").classList.remove("hidden")
+                                // document.body.scrollIntoView(false);
+
+                                //}, 1000);
+
+
                             })
 
 
 
-                        }
-
-                        start().then(e => {
-
-                            // setTimeout(function timer() {
-                            // document.getElementById("launchContainer").classList.remove("hidden")
-                            // document.body.scrollIntoView(false);
-
-                            //}, 1000);
-
-
-                        })
-
-
-
+                        });
                     });
+
+                    var ctx = document.getElementById('myChart').getContext('2d');
+                    var chart = new Chart(ctx, {
+                        // The type of chart we want to create
+                        type: 'pie',
+
+                        // The data for our dataset
+                        data: {
+                            labels: ["Added Song ✌", "Already Added 😎", "Not found 🙁"],
+                            datasets: [{
+                                backgroundColor: ['#1db954', '#1d8db9', '#D3394C'],
+                                data: [0, 0, 0],
+                            }]
+                        },
+
+                        // Configuration options go here
+                        options: {}
+                    });
+
+
+
+
+
+
                 });
 
-                var ctx = document.getElementById('myChart').getContext('2d');
-                var chart = new Chart(ctx, {
-                    // The type of chart we want to create
-                    type: 'pie',
 
-                    // The data for our dataset
-                    data: {
-                        labels: ["Added Song ✌", "Already Added 😎", "Not found 🙁"],
-                        datasets: [{
-                            backgroundColor: ['#1db954', '#1d8db9', '#D3394C'],
-                            data: [0, 0, 0],
-                        }]
-                    },
-
-                    // Configuration options go here
-                    options: {}
-                });
-
-
-
-
-
-
-            });
-
-
-
+            }
 
         </script>
 </body>
