@@ -289,10 +289,18 @@
             
 var db = firebase.firestore();
 db.collection("success_percentage").add({
-    percentage: 125.1
+    percentage: 105.1
 })
 .then(function(docRef) {
-    console.log("Document written with ID: ", docRef.id);
+    
+    
+    db.collection("success_percentage").get().then((querySnapshot) => {
+        
+var ok = querySnapshot.reduce((prevVal, elem) => prevVal + elem.percentage, 0); 
+console.log(log)
+        
+});
+
 })
 .catch(function(error) {
     console.error("Error adding document: ", error);
