@@ -294,20 +294,9 @@ db.collection("success_percentage").add({
 .then(function(docRef) {
     
     db.collection("success_percentage").get().then((querySnapshot) => {
-        console.log(querySnapshot)
-    querySnapshot.forEach((doc) => {
-        console.log(doc.data())
-        console.log(doc.percentage())
-        console.log(`${doc.id} => ${doc.data()}`);
-    });
+ var ok = querySnapshot.reduce((prevVal, doc) => prevVal + doc.data().percentage, 0); 
+        console.log(ok)
 });
-    
-    
-//     db.collection("success_percentage").get().then((querySnapshot) => {
-//        console.log(querySnapshot) 
-//  var ok = querySnapshot.reduce((prevVal, elem) => prevVal + elem.percentage, 0); 
-        
-//});
 
 })
 .catch(function(error) {
