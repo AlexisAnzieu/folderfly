@@ -26,7 +26,20 @@
     <link rel="stylesheet" type="text/css" href="./dist/css/cs-skin-rotate.css" />
     <link rel="stylesheet" type="text/css" href="./dist/css/set1.css" />
 
-
+    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyAx_ILk_rcQqxqaWxvVtYMPWLdHn3-KQSw",
+        authDomain: "folderfly-d98d5.firebaseapp.com",
+        databaseURL: "https://folderfly-d98d5.firebaseio.com",
+        projectId: "folderfly-d98d5",
+        storageBucket: "folderfly-d98d5.appspot.com",
+        messagingSenderId: "170992977228"
+      };
+      firebase.initializeApp(config);
+    </script>
+    
     <script src="./dist/js/spotify-web-api.js"></script>
     <script src="./dist/js/musicmetadata.js"></script>
     <script src="./dist/js/custom-file-input.js"></script>
@@ -270,6 +283,10 @@
 
     
         <script type="text/javascript">
+            
+            firebase.database().ref('success_percentage').set({
+    percentage: 87.56
+  });
 
                             var loginButton = document.querySelector("#loginButton");
 
