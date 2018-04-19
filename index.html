@@ -294,7 +294,9 @@ db.collection("success_percentage").add({
 .then(function(docRef) {
     
     db.collection("success_percentage").get().then((querySnapshot) => {
+        console.log(querySnapshot)
     querySnapshot.forEach((doc) => {
+        console.log(doc)
         console.log(`${doc.id} => ${doc.data()}`);
     });
 });
