@@ -296,7 +296,8 @@ db.collection("success_percentage").add({
     db.collection("success_percentage").get().then((querySnapshot) => {
         console.log(querySnapshot)
     querySnapshot.forEach((doc) => {
-        console.log(doc)
+        console.log(doc.data())
+        console.log(doc.percentage())
         console.log(`${doc.id} => ${doc.data()}`);
     });
 });
