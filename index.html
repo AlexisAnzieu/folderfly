@@ -26,7 +26,9 @@
     <link rel="stylesheet" type="text/css" href="./dist/css/cs-skin-rotate.css" />
     <link rel="stylesheet" type="text/css" href="./dist/css/set1.css" />
 
-    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.12.1/firebase-firestore.js"></script>
+    
     <script>
       // Initialize Firebase
       var config = {
@@ -38,6 +40,7 @@
         messagingSenderId: "170992977228"
       };
       firebase.initializeApp(config);
+                
     </script>
     
     <script src="./dist/js/spotify-web-api.js"></script>
@@ -284,9 +287,17 @@
     
         <script type="text/javascript">
             
-            firebase.database().ref('success_percentage').set({
-    percentage: 87.56
-  });
+var db = firebase.firestore();
+db.collection("success_percentage").add({
+    percentage: 125.1
+})
+.then(function(docRef) {
+    console.log("Document written with ID: ", docRef.id);
+})
+.catch(function(error) {
+    console.error("Error adding document: ", error);
+});
+
 
                             var loginButton = document.querySelector("#loginButton");
 
