@@ -1,1 +1,1 @@
-<?php `git pull`;
+<?php `cd /var/www/html/folderfly ; git pull`;
