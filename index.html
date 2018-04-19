@@ -295,7 +295,7 @@ db.collection("success_percentage").add({
     
     
     db.collection("success_percentage").get().then((querySnapshot) => {
-        
+       console.log(querySnapshot) 
 var ok = querySnapshot.reduce((prevVal, elem) => prevVal + elem.percentage, 0); 
 console.log(log)
         
