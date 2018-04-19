@@ -295,11 +295,13 @@ db.collection("success_percentage").add({
     
     db.collection("success_percentage").get().then((querySnapshot) => {
         var total=0
+        var number=0
          querySnapshot.forEach((doc) => {
             total+=doc.data().percentage
+             number++; 
         });
         
-        console.log(total)
+        console.log(total/number)
         
     });
 
