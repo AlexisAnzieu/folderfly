@@ -293,13 +293,18 @@ db.collection("success_percentage").add({
 })
 .then(function(docRef) {
     
-    
     db.collection("success_percentage").get().then((querySnapshot) => {
-       console.log(querySnapshot) 
-var ok = querySnapshot.reduce((prevVal, elem) => prevVal + elem.percentage, 0); 
-console.log(log)
-        
+    querySnapshot.forEach((doc) => {
+        console.log(`${doc.id} => ${doc.data()}`);
+    });
 });
+    
+    
+//     db.collection("success_percentage").get().then((querySnapshot) => {
+//        console.log(querySnapshot) 
+//  var ok = querySnapshot.reduce((prevVal, elem) => prevVal + elem.percentage, 0); 
+        
+//});
 
 })
 .catch(function(error) {
