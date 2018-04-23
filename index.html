@@ -540,7 +540,7 @@
                                                 var total = 0
                                                 var number = 0
                                                 querySnapshot.forEach((doc) => {
-                                                    total += doc.data().percentage
+                                                    total += parseInt(doc.data().percentage); 
                                                     number++;
                                                 });
 
