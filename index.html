@@ -4,12 +4,12 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
-    <meta property="og:description"   content="Automatically export your local song to spotify for free 🎶" />
-    <meta property="og:image"  content="https://folderfly.xyz/dist/img/fbLogo.png" />
-    <meta property="og:url"      content="https://folderfly.xyz" />
-    <meta property="og:title"    content="folderfly - folder scrapping" />
-    <meta property="fb:app_id"    content="321634215032196" />
+
+    <meta property="og:description" content="Automatically export your local song to spotify for free 🎶" />
+    <meta property="og:image" content="https://folderfly.xyz/dist/img/fbLogo.png" />
+    <meta property="og:url" content="https://folderfly.xyz" />
+    <meta property="og:title" content="folderfly - folder scrapping" />
+    <meta property="fb:app_id" content="321634215032196" />
 
 
     <title>folderfly </title>
@@ -26,23 +26,23 @@
     <link rel="stylesheet" type="text/css" href="./dist/css/cs-skin-rotate.css" />
     <link rel="stylesheet" type="text/css" href="./dist/css/set1.css" />
 
-<script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
-<script src="https://www.gstatic.com/firebasejs/4.12.1/firebase-firestore.js"></script>
-    
+    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase-firestore.js"></script>
+
     <script>
-      // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyAx_ILk_rcQqxqaWxvVtYMPWLdHn3-KQSw",
-        authDomain: "folderfly-d98d5.firebaseapp.com",
-        databaseURL: "https://folderfly-d98d5.firebaseio.com",
-        projectId: "folderfly-d98d5",
-        storageBucket: "folderfly-d98d5.appspot.com",
-        messagingSenderId: "170992977228"
-      };
-      firebase.initializeApp(config);
-                
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyAx_ILk_rcQqxqaWxvVtYMPWLdHn3-KQSw",
+            authDomain: "folderfly-d98d5.firebaseapp.com",
+            databaseURL: "https://folderfly-d98d5.firebaseio.com",
+            projectId: "folderfly-d98d5",
+            storageBucket: "folderfly-d98d5.appspot.com",
+            messagingSenderId: "170992977228"
+        };
+        firebase.initializeApp(config);
+
     </script>
-    
+
     <script src="./dist/js/spotify-web-api.js"></script>
     <script src="./dist/js/musicmetadata.js"></script>
     <script src="./dist/js/custom-file-input.js"></script>
@@ -273,50 +273,30 @@
             </div>
 
         </div>
-    
-                        <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-82835641-2"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'UA-82835641-2');
-</script>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-82835641-2"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
 
-    
+            gtag('config', 'UA-82835641-2');
+        </script>
+
+
         <script type="text/javascript">
-            
-var db = firebase.firestore();
-db.collection("success_percentage").add({
-    percentage: 105.1
-})
-.then(function(docRef) {
-    
-    db.collection("success_percentage").get().then((querySnapshot) => {
-        var total=0
-        var number=0
-         querySnapshot.forEach((doc) => {
-            total+=doc.data().percentage
-             number++; 
-        });
-        
-        console.log(`Just for fun ${total/number}`)
-        
-    });
 
-})
-.catch(function(error) {
-    console.error("Error adding document: ", error);
-});
+            var db = firebase.firestore();
 
 
-                            var loginButton = document.querySelector("#loginButton");
+
+            var loginButton = document.querySelector("#loginButton");
 
 
             if (/Mobi/.test(navigator.userAgent)) {
 
-               loginButton.innerHTML="Please go to this website with a computer"
+                loginButton.innerHTML = "<h3>Please go to this website with a computer</h2>"
 
             } else {
 
@@ -550,6 +530,30 @@ db.collection("success_percentage").add({
                                 }
 
                                 if (i == tracksNumber - 1) {
+
+                                    db.collection("success_percentage").add({
+                                        percentage: ((addedSongArray.length + alreadyAddedTrack) / songList.length * 100).toFixed(2)
+                                    })
+                                        .then(function (docRef) {
+
+                                            db.collection("success_percentage").get().then((querySnapshot) => {
+                                                var total = 0
+                                                var number = 0
+                                                querySnapshot.forEach((doc) => {
+                                                    total += doc.data().percentage
+                                                    number++;
+                                                });
+
+                                                console.log(`Total  ${total / number}`)
+
+                                            });
+
+                                        })
+                                        .catch(function (error) {
+                                            console.error("Error adding document: ", error);
+                                        });
+
+
 
                                     currentSong.innerHTML = ""
                                     totalNumber.innerHTML = ""
@@ -865,8 +869,8 @@ db.collection("success_percentage").add({
                         // Configuration options go here
                         options: {}
                     });
-                    
-                    
+
+
 
 
 
