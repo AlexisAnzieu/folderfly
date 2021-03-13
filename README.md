@@ -1,4 +1,4 @@
 # folderfly
 automatic match between your local music and spotify
 
-https://folderfly.xyz
+https://folderfly.vercel.app/
